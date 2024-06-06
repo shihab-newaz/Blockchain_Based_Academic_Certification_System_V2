@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import '../css/Issue.css';
+import '../css/View.css';
 import { initContract } from './Contract';
 
 function VerifyCertificateComponent() {
@@ -52,11 +52,11 @@ function VerifyCertificateComponent() {
     };
 
     return (
-        <div className='issue-certificate-container'>
-            <h1>Certificate Verification</h1>
+        <div className='verify-certificate-container'>
+            <h1>Verify Certificate</h1>
             <input
                 type="text"
-                placeholder="Student Address"
+                placeholder="Student Address"  style={{ marginBottom: '10px' }}
                 value={studentAddress}
                 onChange={(e) => setStudentAddress(e.target.value)}
             />
@@ -66,12 +66,15 @@ function VerifyCertificateComponent() {
                 placeholder="Verifier Address"
                 onChange={(e) => setEmployerAddress(e.target.value)}
             />
-            <button onClick={verifyCertificate}>Verify Certificate</button>
+            <button onClick={verifyCertificate} 
+                style={{
+                    backgroundColor: '#4caf50', color: 'white', padding: '10px 15px', border: 'none',
+                    borderRadius: '5px', marginBottom: '10px', cursor: 'pointer'
+                }}>
+                Verify
+            </button>
             <p>{signatureVerification}</p>
             <p>{verificationMessage}</p>
-
-
-
         </div>
     );
 }

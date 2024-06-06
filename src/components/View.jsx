@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import '../css/View.css';
 import CryptoJS from 'crypto-js';
 import AES from 'crypto-js/aes';
-import Utf8 from 'crypto-js/enc-utf8';
-import Base64 from 'crypto-js/enc-base64';
 import { initContract } from './Contract';
+import VerifyCertificateComponent from './Verify';
 import { createIPFSclient } from './IPFS'
 
 
@@ -130,7 +129,7 @@ function ViewCertificateComponent() {
               borderRadius: '5px', marginBottom: '10px', cursor: 'pointer',
             }}
           >
-            View Certificate Details
+            View
           </button>
         </div>
       )}
@@ -158,7 +157,14 @@ function ViewCertificateComponent() {
         </div>
       )}
       {viewMessage && <p>{viewMessage.error}</p>}
+
+      {isCorrectKey && <div className='verify'>
+        <VerifyCertificateComponent />
+      </div>
+      }
     </div>
+
+
   );
 }
 

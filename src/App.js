@@ -49,8 +49,8 @@ function App() {
         <Link to="/view">Viewer Portal</Link>
         <Link to="/share">Share</Link>
         <Link to="/unshare">Unshare</Link>
-        <Link to="/verify">Verify</Link>
-        {/* <Link to="/viewAll">View All</Link>
+        {/* <Link to="/verify">Verify</Link>
+        <Link to="/viewAll">View All</Link>
         <Link to="/tamper">Tamper</Link> */}
 
 
