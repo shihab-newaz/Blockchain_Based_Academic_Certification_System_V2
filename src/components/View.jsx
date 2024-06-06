@@ -34,9 +34,12 @@ function ViewCertificateComponent() {
       const parsedData = JSON.parse(text);
       setCertificateDetails(parsedData.certificateData);
 
-      const fileBlob = new Blob([new Uint8Array(parsedData.fileData)], { type: 'image/jpeg' });
+      // Convert the fileData back to Uint8Array
+      const uint8ArrayData = new Uint8Array(Object.values(parsedData.fileData));
+
+      // Create a Blob from the Uint8Array
+      const fileBlob = new Blob([uint8ArrayData], { type: 'image/jpeg' });
       const url = URL.createObjectURL(fileBlob);
-      console.log(parsedData.fileData);
       setFileUrl(url);
       setViewIPFSimage(true);
 
@@ -45,6 +48,7 @@ function ViewCertificateComponent() {
       setViewMessage({ error: error.message });
     }
   }
+
 
   const checkSecretKey = () => {
     if (inputSecretKey === process.env.REACT_APP_AES_SECRET_KEY) {
@@ -69,15 +73,11 @@ function ViewCertificateComponent() {
         setViewMessage({ error: certificate.error });
         return;
       }
-      console.log(certificate.encryptedData);
       const decryptedBytes = AES.decrypt(certificate.encryptedData, process.env.REACT_APP_AES_SECRET_KEY);
       const certificateCID = decryptedBytes.toString(CryptoJS.enc.Utf8);
-      console.log('Decrypted bytes:', decryptedBytes);
-
-      console.log('Certificate CID:', certificateCID);
-
 
       fetchFromIPFS(certificateCID);
+
       setShowDetails(true);
 
     } catch (error) {
@@ -85,6 +85,7 @@ function ViewCertificateComponent() {
       setViewMessage({ error: 'Failed to view certificate: ' + error.message });
     }
   };
+
 
   return (
     <div className="view-container">
@@ -145,11 +146,15 @@ function ViewCertificateComponent() {
             <p>Issue Timestamp: {new Date(certificateDetails.issueTimestamp * 1000).toLocaleString()}</p>
             <p>Expiry: {certificateDetails.expiration} days</p>
           </div>
-          {viewIPFSimage && (
+          {viewIPFSimage && fileUrl && (
             <div>
-              <img id="image" alt="From IPFS" src={fileUrl} height={480} width={360} />
+              {fileUrl && (
+                <img id="image" alt="From IPFS" src={fileUrl} height={480} width={360} />
+              )}
+              {!fileUrl && <p>No image found</p>}
             </div>
           )}
+
         </div>
       )}
       {viewMessage && <p>{viewMessage.error}</p>}
