@@ -1,25 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import '../css/View.css';
 import CryptoJS from 'crypto-js';
 import AES from 'crypto-js/aes';
 import { initContract } from './Contract';
-import VerifyCertificateComponent from './Verify';
-import { createIPFSclient } from './IPFS'
+import { verifyCertificate } from './Verify';
+import { createIPFSclient } from './IPFS';
 
-
+//0x5A7E0D6823D42110A1D361F7E115Aa300Cf8F0c7
+//0x70997970C51812dc3A010C7d01b50e0d17dc79C8
 
 function ViewCertificateComponent() {
-  const [studentAddress, setStudentAddress] = useState('');
-  const [employerAddress, setEmployerAddress] = useState('');
+  const location = useLocation();
   const [viewMessage, setViewMessage] = useState({});
   const [fileUrl, setFileUrl] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
   const [certificateDetails, setCertificateDetails] = useState(null);
   const [viewIPFSimage, setViewIPFSimage] = useState(false);
   const [inputSecretKey, setInputSecretKey] = useState('');
   const [isCorrectKey, setIsCorrectKey] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState('');
+  const [signatureValidation, setSignatureValidation] = useState('');
   const client = createIPFSclient();
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const studentAddress = searchParams.get('studentAddress');
+    const employerAddress = searchParams.get('employerAddress');
+
+    if (studentAddress && employerAddress) {
+      viewCertificate(studentAddress, employerAddress);
+    }
+  }, [location.search]);
 
   async function fetchFromIPFS(CID) {
     try {
@@ -48,7 +59,6 @@ function ViewCertificateComponent() {
     }
   }
 
-
   const checkSecretKey = () => {
     if (inputSecretKey === process.env.REACT_APP_AES_SECRET_KEY) {
       setIsCorrectKey(true);
@@ -57,7 +67,7 @@ function ViewCertificateComponent() {
     }
   };
 
-  const viewCertificate = async () => {
+  const viewCertificate = async (studentAddress, employerAddress) => {
     try {
       const { contract } = await initContract();
       const permission = await contract.isCertificateSharedWith(studentAddress, employerAddress);
@@ -77,14 +87,24 @@ function ViewCertificateComponent() {
 
       fetchFromIPFS(certificateCID);
 
-      setShowDetails(true);
-
     } catch (error) {
       console.error('Failed to view certificate:', error);
       setViewMessage({ error: 'Failed to view certificate: ' + error.message });
     }
   };
 
+  const handleVerifyCertificate = async () => {
+    const searchParams = new URLSearchParams(location.search);
+    const studentAddress = searchParams.get('studentAddress');
+    const employerAddress = searchParams.get('employerAddress');
+
+    const result = await verifyCertificate(studentAddress, employerAddress);
+    if (result.error) {
+      setVerificationMessage(result.error);
+    } else if (result.success) {
+      setSignatureValidation(result.success);
+    }
+  };
 
   return (
     <div className="view-container">
@@ -107,33 +127,8 @@ function ViewCertificateComponent() {
           </button>
         </div>
       )}
-      {isCorrectKey && !showDetails && (
-        <div>
-          <h1>View Certificate</h1>
-          <input
-            style={{ marginBottom: '10px' }}
-            type="text"
-            placeholder="Student Address"
-            onChange={(e) => setStudentAddress(e.target.value)}
-          />
-          <input
-            style={{ marginBottom: '10px' }}
-            type="text"
-            placeholder="Employer Address"
-            onChange={(e) => setEmployerAddress(e.target.value)}
-          />
-          <button
-            onClick={viewCertificate}
-            style={{
-              backgroundColor: '#4caf50', color: 'white', padding: '10px 15px', border: 'none',
-              borderRadius: '5px', marginBottom: '10px', cursor: 'pointer',
-            }}
-          >
-            View
-          </button>
-        </div>
-      )}
-      {isCorrectKey && showDetails && certificateDetails && (
+
+      {isCorrectKey && certificateDetails && (
         <div className="details-container">
           <div className="certificate-details">
             <h4>Certificate Details</h4>
@@ -153,20 +148,27 @@ function ViewCertificateComponent() {
               {!fileUrl && <p>No image found</p>}
             </div>
           )}
-
         </div>
       )}
-      {viewMessage && <p>{viewMessage.error}</p>}
+      {viewMessage.error && <p>{viewMessage.error}</p>}
 
-      {isCorrectKey && <div className='verify'>
-        <VerifyCertificateComponent />
-      </div>
-      }
+      {isCorrectKey && (
+        <div className="verify">
+          <button
+            onClick={handleVerifyCertificate}
+            style={{
+              backgroundColor: '#4caf50', color: 'white', padding: '10px 15px', border: 'none',
+              borderRadius: '5px', marginBottom: '10px', cursor: 'pointer'
+            }}>
+            Verify Certificate
+          </button>
+        </div>
+      )}
+
+      {verificationMessage && <p>{verificationMessage}</p>}
+      {signatureValidation && <p>{signatureValidation}</p>}
     </div>
-
-
   );
 }
 
 export default ViewCertificateComponent;
-

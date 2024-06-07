@@ -1,13 +1,14 @@
 /* IssueCertificate.css */
 
-.issue-certificate-container {
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: beige;
+.issue-certificate-container {max-width: 400px;
+  display: flex;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: beige;
+  flex-direction: column;
+
   }
   
   h1 {
@@ -15,14 +16,14 @@
     margin-bottom: 20px;
   }
   
-  input {
-    width: 80%;
+  #issue {
+    width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     box-sizing: border-box;
   }
   
-  button {
+  #btn {
     background-color: #4caf50;
     color: white;
     padding: 10px 15px;

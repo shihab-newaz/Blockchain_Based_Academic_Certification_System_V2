@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { ethers } from 'ethers';
-import '../css/Issue.css'
 import { initContract } from './Contract';
 import { createIPFSclient } from './IPFS';
 import { generateStudentCredentials } from './Utils';
+import '../css/Issue.css';
 import AES from 'crypto-js/aes';
 
 function IssueCertificateComponent() {
@@ -84,45 +84,40 @@ function IssueCertificateComponent() {
   return (
     <div className='issue-certificate-container'>
       <h1>Issue Certificate</h1>
-      <input
+      <input id='issue'
         type="text"
         placeholder="Student Name"
         onChange={(e) => setStudentName(e.target.value)}
       />
-      <input
+      <input id='issue'
         type="text"
         placeholder="Roll Number"
         onChange={(e) => setRoll(e.target.value)}
       />
-      <input
+      <input id='issue'
         type="text"
         placeholder="Degree Name"
         onChange={(e) => setDegreeName(e.target.value)}
       />
-      <input
+      <input id='issue'
         type="text"
         placeholder="Subject"
         onChange={(e) => setSubject(e.target.value)}
       />
-      <input
+      <input id='issue'
         type="text"
         placeholder="Expiration"
         onChange={(e) => setExpiry(e.target.value)}
       />
-      {/* <input
-        type="text"
-        placeholder="Student Address"
-        onChange={(e) => setStudentAddress(e.target.value)}
-      /> */}
 
-      <button onClick={() => generateStudentCredentials(generatedAddresses, setStudentAddress, setGeneratedAddresses)}>
+      <input type="file" ref={fileInput} />
+
+      <button id='btn' onClick={() => generateStudentCredentials(generatedAddresses, setStudentAddress, setGeneratedAddresses)}>
         Generate Student Credentials
       </button>
-      {studentAddress !== '' && <div> Student Address: {studentAddress}</div> }
-      <input type="file" ref={fileInput} />
-      {/* <button onClick={handleUploadToIPFS} style={{ marginBottom: 10, }}>Upload to IPFS</button> <br /> */}
+      {studentAddress !== '' && <div> Student Address: {studentAddress}</div>}
 
-      <button onClick={issueCertificate}>Issue Certificate</button> <br />
+      <button id='btn' onClick={issueCertificate}>Issue Certificate</button> <br />
       {isLoading && <>
         <div className="spinner"></div>
         <p>Uploading to the chain</p></>}
@@ -130,8 +125,6 @@ function IssueCertificateComponent() {
       <p>{issueResult}</p><br />
 
     </div>
-
-
   );
 
 }
