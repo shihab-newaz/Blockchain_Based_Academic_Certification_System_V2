@@ -7,17 +7,12 @@ import { initContract } from './Contract';
 import { verifyCertificate } from './Verify';
 import { createIPFSclient } from './IPFS';
 
-//0x5A7E0D6823D42110A1D361F7E115Aa300Cf8F0c7
-//0x70997970C51812dc3A010C7d01b50e0d17dc79C8
-
 function ViewCertificateComponent() {
   const location = useLocation();
   const [viewMessage, setViewMessage] = useState({});
   const [fileUrl, setFileUrl] = useState(null);
   const [certificateDetails, setCertificateDetails] = useState(null);
   const [viewIPFSimage, setViewIPFSimage] = useState(false);
-  const [inputSecretKey, setInputSecretKey] = useState('');
-  const [isCorrectKey, setIsCorrectKey] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState('');
   const [signatureValidation, setSignatureValidation] = useState('');
   const client = createIPFSclient();
@@ -25,10 +20,9 @@ function ViewCertificateComponent() {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const studentAddress = searchParams.get('studentAddress');
-    const employerAddress = searchParams.get('employerAddress');
 
-    if (studentAddress && employerAddress) {
-      viewCertificate(studentAddress, employerAddress);
+    if (studentAddress) {
+      viewCertificate(studentAddress);
     }
   }, [location.search]);
 
@@ -52,41 +46,32 @@ function ViewCertificateComponent() {
       const url = URL.createObjectURL(fileBlob);
       setFileUrl(url);
       setViewIPFSimage(true);
-
     } catch (error) {
       console.error('Error fetching file from IPFS:', error);
       setViewMessage({ error: error.message });
     }
   }
 
-  const checkSecretKey = () => {
-    if (inputSecretKey === process.env.REACT_APP_AES_SECRET_KEY) {
-      setIsCorrectKey(true);
-    } else {
-      alert('The input secret key is incorrect.');
-    }
-  };
-
-  const viewCertificate = async (studentAddress, employerAddress) => {
+  const viewCertificate = async (studentAddress) => {
     try {
       const { contract } = await initContract();
-      const permission = await contract.isCertificateSharedWith(studentAddress, employerAddress);
-      if (!permission) {
-        setViewMessage({ error: 'This viewer does not have permission for this certificate' });
-        return;
-      }
-
       const certificate = await contract.viewCertificate(studentAddress);
-
+      console.log(certificate.encryptedCID)
       if (certificate.error) {
         setViewMessage({ error: certificate.error });
         return;
       }
-      const decryptedBytes = AES.decrypt(certificate.encryptedData, process.env.REACT_APP_AES_SECRET_KEY);
-      const certificateCID = decryptedBytes.toString(CryptoJS.enc.Utf8);
 
-      fetchFromIPFS(certificateCID);
+      try {
+        const decryptedBytes = AES.decrypt(certificate.encryptedCID, process.env.REACT_APP_AES_SECRET_KEY);
+        const certificateCID = decryptedBytes.toString(CryptoJS.enc.Utf8); 
 
+        console.log(certificateCID)
+        fetchFromIPFS(certificateCID);
+      } catch (decryptError) {
+        console.error('Decryption error:', decryptError);
+        setViewMessage({ error: 'Failed to decrypt certificate data. Please check the secret key.' });
+      }
     } catch (error) {
       console.error('Failed to view certificate:', error);
       setViewMessage({ error: 'Failed to view certificate: ' + error.message });
@@ -96,9 +81,8 @@ function ViewCertificateComponent() {
   const handleVerifyCertificate = async () => {
     const searchParams = new URLSearchParams(location.search);
     const studentAddress = searchParams.get('studentAddress');
-    const employerAddress = searchParams.get('employerAddress');
 
-    const result = await verifyCertificate(studentAddress, employerAddress);
+    const result = await verifyCertificate(studentAddress);
     if (result.error) {
       setVerificationMessage(result.error);
     } else if (result.success) {
@@ -108,27 +92,8 @@ function ViewCertificateComponent() {
 
   return (
     <div className="view-container">
-      {!isCorrectKey && (
-        <div>
-          <input
-            style={{ marginBottom: '10px' }}
-            type="password"
-            placeholder="Enter Secret Key"
-            onChange={(e) => setInputSecretKey(e.target.value)}
-          />
-          <button
-            onClick={checkSecretKey}
-            style={{
-              backgroundColor: '#4caf50', color: 'white', padding: '10px 15px',
-              border: 'none', borderRadius: '5px', marginBottom: '10px', cursor: 'pointer',
-            }}
-          >
-            Enter Secret Key
-          </button>
-        </div>
-      )}
 
-      {isCorrectKey && certificateDetails && (
+      {certificateDetails && (
         <div className="details-container">
           <div className="certificate-details">
             <h4>Certificate Details</h4>
@@ -142,9 +107,7 @@ function ViewCertificateComponent() {
           </div>
           {viewIPFSimage && fileUrl && (
             <div>
-              {fileUrl && (
-                <img id="image" alt="From IPFS" src={fileUrl} height={480} width={360} />
-              )}
+              {fileUrl && <img id="image" alt="From IPFS" src={fileUrl} height={480} width={360} />}
               {!fileUrl && <p>No image found</p>}
             </div>
           )}
@@ -152,14 +115,20 @@ function ViewCertificateComponent() {
       )}
       {viewMessage.error && <p>{viewMessage.error}</p>}
 
-      {isCorrectKey && (
+      {certificateDetails && (
         <div className="verify">
           <button
             onClick={handleVerifyCertificate}
             style={{
-              backgroundColor: '#4caf50', color: 'white', padding: '10px 15px', border: 'none',
-              borderRadius: '5px', marginBottom: '10px', cursor: 'pointer'
-            }}>
+              backgroundColor: '#4caf50',
+              color: 'white',
+              padding: '10px 15px',
+              border: 'none',
+              borderRadius: '5px',
+              marginBottom: '10px',
+              cursor: 'pointer',
+            }}
+          >
             Verify Certificate
           </button>
         </div>

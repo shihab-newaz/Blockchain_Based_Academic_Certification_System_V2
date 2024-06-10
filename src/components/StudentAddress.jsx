@@ -6,17 +6,16 @@ import { toPng } from 'html-to-image';
 function StudentAddressComponent() {
   const navigate = useNavigate();
   const [studentAddress, setStudentAddress] = React.useState('');
-  const [employerAddress, setEmployerAddress] = React.useState('');
   const [qrUrl, setQrUrl] = React.useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const url = `/view?studentAddress=${studentAddress}&employerAddress=${employerAddress}`;
+    const url = `/view?studentAddress=${studentAddress}`;
     navigate(url);
   };
 
   const generateQRCode = () => {
-    const url = `${window.location.origin}/view?studentAddress=${studentAddress}&employerAddress=${employerAddress}`;
+    const url = `${window.location.origin}/view?studentAddress=${studentAddress}`;
     setQrUrl(url);
   };
 
@@ -44,13 +43,7 @@ function StudentAddressComponent() {
           onChange={(e) => setStudentAddress(e.target.value)}
           placeholder="Enter student address"
         />
-        <input
-          type="text"
-          value={employerAddress}
-          onChange={(e) => setEmployerAddress(e.target.value)}
-          placeholder="Enter employer address"
-        />
-        <button type="submit">View Certificate</button>
+        <button type="submit" style={{ marginRight: '10px' }}>View Certificate</button>
         <button type="button" onClick={generateQRCode}>Generate QR Code</button>
       </form>
 

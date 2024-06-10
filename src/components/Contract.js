@@ -7,7 +7,7 @@ export function initContract() {
 
   const PROVIDER = new ethers.providers.JsonRpcProvider('http://localhost:8545');
   const signer = new ethers.Wallet(PRIVATE_KEY, PROVIDER);
-  const CONTRACT_ABI = require('../abis/CertificateNFT.json');
+  const CONTRACT_ABI = require('../abis/CertificateContract.json');
   const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
   return {contract, signer};

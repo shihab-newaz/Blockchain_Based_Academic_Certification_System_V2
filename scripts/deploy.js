@@ -7,7 +7,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // Get the contract factory
-  const MyNFT = await ethers.getContractFactory("CertificateNFT");
+  const MyNFT = await ethers.getContractFactory("CertificateContract");
 
   // Start deployment, returning a promise that resolves to a contract object
   const myNFT = await MyNFT.deploy();
