@@ -5,19 +5,18 @@ require('dotenv').config();
 require("@nomiclabs/hardhat-ethers");
 require("hardhat-abigen");
 
-//require("@nomicfoundation/hardhat-toolbox");
-const { REACT_APP_SEED_PHRASE } = process.env;
-
-
 module.exports = {
   solidity: "0.8.19",
   networks: {
-    hardhat: {
-      chainId: 1337,
-      showAccounts: true,
+    sepolia: {
+      url: `https://sepolia.infura.io/v3/${process.env.REACT_APP_API_KEY}`,
+      accounts: [`0x${process.env.REACT_APP_PRIVATE_KEY}`],
     },
   },
-  
+  etherscan: {
+    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY,
+  },
+
   abigen: {
    outDir: "src/abis",   
    inDir: "contracts",       
