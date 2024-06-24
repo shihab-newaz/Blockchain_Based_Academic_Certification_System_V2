@@ -6,7 +6,7 @@ import AES from 'crypto-js/aes';
 import { initContract } from './Contract';
 import { verifyCertificate } from './Verify';
 import { createIPFSclient } from './IPFS';
-
+//0x62E1a97955E8c3Ff4f8e00Febd2818b2E4f9E39a
 function ViewCertificateComponent() {
   const location = useLocation();
   const [viewMessage, setViewMessage] = useState({});

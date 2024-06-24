@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract CertificateContract {
+contract CertificateNFT {
     address public owner;
 
     struct Certificate {
         address recipient;
-        string encryptedCID;
+        string encryptedData;
         bytes32 dataHash;
         bytes signature;
         bool isIssued;
@@ -14,7 +14,6 @@ contract CertificateContract {
     }
 
     mapping(address => Certificate) public certificates;
-    address[] public recipients;
 
     constructor() {
         owner = msg.sender;
@@ -30,13 +29,11 @@ contract CertificateContract {
 
     function issueCertificate(
         address recipient,
-        string memory encryptedCID,
+        string memory encryptedData,
         bytes32 dataHash,
         bytes memory signature
     ) public onlyOwner {
         require(recipient != address(0), "Invalid recipient address");
-        recipients.push(recipient);
-        //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             !certificates[recipient].isIssued ||
                 certificates[recipient].isRevoked,
@@ -44,7 +41,7 @@ contract CertificateContract {
         );
         certificates[recipient] = Certificate(
             recipient,
-            encryptedCID,
+            encryptedData,
             dataHash,
             signature,
             true,
@@ -54,7 +51,6 @@ contract CertificateContract {
 
     function verifyCertificate(address recipient) public view returns (bool) {
         require(recipient != address(0), "Invalid recipient address");
-        //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             certificates[recipient].recipient == recipient,
             "No certificate found for this recipient"
@@ -78,7 +74,7 @@ contract CertificateContract {
 
     function viewCertificate(
         address studentAddress
-    ) public view returns (string memory encryptedCID, bytes32 dataHash, bytes memory signature) {
+    ) public view returns (string memory encryptedData, bytes32 dataHash, bytes memory signature) {
         require(
             certificates[studentAddress].recipient == studentAddress,
             "No certificate found for this student"
@@ -89,7 +85,7 @@ contract CertificateContract {
             "This certificate has been revoked"
         );
         return (
-            certificates[studentAddress].encryptedCID,
+            certificates[studentAddress].encryptedData,
             certificates[studentAddress].dataHash,
             certificates[studentAddress].signature
         );
@@ -97,7 +93,7 @@ contract CertificateContract {
 
     function updateCertificate(
         address recipient,
-        string memory encryptedCID,
+        string memory encryptedData,
         bytes32 dataHash,
         bytes memory signature
     ) public  {
@@ -111,9 +107,12 @@ contract CertificateContract {
 
         Certificate storage certificateToUpdate = certificates[recipient];
 
-        certificateToUpdate.encryptedCID = encryptedCID;
+        certificateToUpdate.encryptedData = encryptedData;
         certificateToUpdate.dataHash = dataHash;
         certificateToUpdate.signature = signature;
     }
 
 }
+
+ 
+

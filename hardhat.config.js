@@ -6,11 +6,14 @@ require("@nomiclabs/hardhat-ethers");
 require("hardhat-abigen");
 
 module.exports = {
-  solidity: "0.8.19",
+  solidity: "0.8.20",
   networks: {
-    sepolia: {
-      url: `https://sepolia.infura.io/v3/${process.env.REACT_APP_API_KEY}`,
-      accounts: [`0x${process.env.REACT_APP_PRIVATE_KEY}`],
+    hardhat: {},
+    myQuickNode: {
+      url: process.env.REACT_APP_API_URL,
+      accounts: [
+        process.env.REACT_APP_PRIVATE_KEY,
+      ],
     },
   },
   etherscan: {

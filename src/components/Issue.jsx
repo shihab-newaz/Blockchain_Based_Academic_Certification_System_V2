@@ -1,3 +1,4 @@
+//calls the contract to issue certificates
 import React, { useState, useRef } from 'react';
 import { ethers } from 'ethers';
 import { initContract } from './Contract';
@@ -65,7 +66,14 @@ function IssueCertificateComponent() {
 
       const hash = ethers.utils.hashMessage(encryptedData);
       const signature = await signer.signMessage(hash);
-
+      contract.estimateGas.issueCertificate(studentAddress, encryptedData, hash, signature)
+      .then((gasEstimate) => {
+        console.log(`Estimated gas for issueCertificate: ${gasEstimate.toString()}`);
+        // You can then multiply the gas estimate by the current gas price to get the transaction cost
+      })
+      .catch((error) => {
+        console.error('Error estimating gas:', error);
+      });
       const transaction = await contract.issueCertificate(
         studentAddress,
         encryptedData,
