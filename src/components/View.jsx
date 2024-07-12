@@ -56,21 +56,21 @@ function ViewCertificateComponent() {
     try {
       const { contract } = await initContract();
       const certificate = await contract.viewCertificate(studentAddress);
-      console.log(certificate.encryptedCID)
+      console.log(certificate.encryptedData)
       if (certificate.error) {
         setViewMessage({ error: certificate.error });
         return;
       }
 
       try {
-        const decryptedBytes = AES.decrypt(certificate.encryptedCID, process.env.REACT_APP_AES_SECRET_KEY);
+        const decryptedBytes = AES.decrypt(certificate.encryptedData, process.env.REACT_APP_AES_SECRET_KEY);
         const certificateCID = decryptedBytes.toString(CryptoJS.enc.Utf8); 
 
         console.log(certificateCID)
         fetchFromIPFS(certificateCID);
       } catch (decryptError) {
         console.error('Decryption error:', decryptError);
-        setViewMessage({ error: 'Failed to decrypt certificate data. Please check the secret key.' });
+        setViewMessage({ error: 'Failed to decrypt certificate data. ' });
       }
     } catch (error) {
       console.error('Failed to view certificate:', error);

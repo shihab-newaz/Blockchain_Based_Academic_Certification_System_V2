@@ -1,11 +1,11 @@
-//calls the contract to issue certificates
 import React, { useState, useRef } from 'react';
-import { ethers } from 'ethers';
-import { initContract } from './Contract';
 import { createIPFSclient } from './IPFS';
 import { generateStudentCredentials } from './Utils';
+import {initContract} from './Contract';
+import { ethers } from 'ethers';
 import '../css/Issue.css';
 import AES from 'crypto-js/aes';
+import axios from 'axios';
 
 function IssueCertificateComponent() {
   const [studentName, setStudentName] = useState('');
@@ -18,7 +18,6 @@ function IssueCertificateComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedAddresses, setGeneratedAddresses] = useState([]);
   const fileInput = useRef(null);
-
 
   async function handleUploadToIPFS() {
     const file = fileInput.current.files[0];
@@ -41,7 +40,6 @@ function IssueCertificateComponent() {
           const { cid } = await client.add(dataToUpload);
           console.log(cid.toString());
           resolve(cid.toString());
-
         } catch (error) {
           reject(error);
         }
@@ -51,29 +49,36 @@ function IssueCertificateComponent() {
     });
   }
 
-
   const issueCertificate = async () => {
     setIsLoading(true);
     try {
-      const { contract, signer } = initContract();
-
+      const {contract, signer } =await initContract();
       const cidString = await handleUploadToIPFS();
       if (!cidString) {
         throw new Error('Failed to upload to IPFS');
       }
 
       const encryptedData = AES.encrypt(cidString, process.env.REACT_APP_AES_SECRET_KEY).toString();
-
-      const hash = ethers.utils.hashMessage(encryptedData);
+      const hash = ethers.hashMessage(encryptedData);
       const signature = await signer.signMessage(hash);
-      contract.estimateGas.issueCertificate(studentAddress, encryptedData, hash, signature)
-      .then((gasEstimate) => {
+      // const response = await axios.post(`${process.env.REACT_APP_LARAVEL_URL}/api/issue-certificate`, {
+      //   studentAddress: studentAddress,encryptedCID: encryptedData,hash:hash,signature:signature
+      // }, {
+      //   withCredentials: true
+      // });
+
+      // setIssueResult(`Certificate issued successfully! Transaction Hash: ${response.data.txHash}`);
+      try {
+        const gasEstimate = await contract.issueCertificate.estimateGas(
+          studentAddress,
+          encryptedData,
+          hash,
+          signature
+        );//gas estimation
         console.log(`Estimated gas for issueCertificate: ${gasEstimate.toString()}`);
-        // You can then multiply the gas estimate by the current gas price to get the transaction cost
-      })
-      .catch((error) => {
-        console.error('Error estimating gas:', error);
-      });
+      } catch (gasError) {
+        console.error('Error estimating gas:', gasError);
+      }
       const transaction = await contract.issueCertificate(
         studentAddress,
         encryptedData,
@@ -84,7 +89,7 @@ function IssueCertificateComponent() {
       setIssueResult('Certificate issued successfully!');
     } catch (error) {
       console.error('Error issuing certificate:', error);
-      setIssueResult(error.message || 'Failed to issue certificate');
+      setIssueResult(error.response?.data?.error || error.message || 'Failed to issue certificate');
     }
     setIsLoading(false);
   };
@@ -131,11 +136,8 @@ function IssueCertificateComponent() {
         <p>Uploading to the chain</p></>}
 
       <p>{issueResult}</p><br />
-
     </div>
   );
-
 }
 
 export default IssueCertificateComponent;
-

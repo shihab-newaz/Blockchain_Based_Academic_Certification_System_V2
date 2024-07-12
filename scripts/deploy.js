@@ -1,31 +1,36 @@
 async function main() {
-  // Get the signer (one of the default Hardhat accounts)
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
-  console.log("Account balance before deployment:", (await deployer.getBalance()).toString());
 
-  // Get the ContractFactory and deploy the contract
-  const CertificateContract = await ethers.getContractFactory("CertificateContract");
-  const certificateContract = await CertificateContract.deploy(deployer.address);
+  const CertificateNFT = await ethers.getContractFactory("CertificateContract");
+  
+  console.log("Estimating gas...");
+  const estimatedGas = await CertificateNFT.signer.estimateGas(
+    CertificateNFT.getDeployTransaction()
+  );
+  console.log("Estimated gas:", estimatedGas.toString());
 
-  // Wait for the contract to be deployed
-  await certificateContract.deployed();
+  console.log("Deploying...");
+  const certificateNFT = await CertificateNFT.deploy({
+    gasLimit: estimatedGas.mul(120).div(100) // Add 20% buffer
+  });
 
-  // Get the deployment receipt
-  const deploymentReceipt = await certificateContract.deployTransaction.wait();
+  console.log("Waiting for deployment...");
+  await certificateNFT.deployed();
 
-  // Log the contract address and deployment details
-  console.log("CertificateContract deployed to:", certificateContract.address);
-  console.log("Deployment complete");
+  console.log("CertificateNFT deployed to:", certificateNFT.address);
 
-  console.log("Account balance after deployment:", (await deployer.getBalance()).toString());
 
-  // Log the gas used and effective gas price
-  console.log("Gas used for deployment:", deploymentReceipt.gasUsed.toString());
-  console.log("Effective gas price (wei):", deploymentReceipt.effectiveGasPrice.toString());
+  // Save deployment info to a file (useful for verification)
+  const fs = require('fs');
+  const deploymentInfo = {
+    contractAddress: certificateNFT.address,
+    deployerAddress: deployer.address,
+  };
+  fs.writeFileSync('deployment-info.json', JSON.stringify(deploymentInfo, null, 2));
+  console.log("Deployment info saved to deployment-info.json");
 }
 
-// Handle any errors during the deployment process
 main()
   .then(() => process.exit(0))
   .catch((error) => {

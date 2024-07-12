@@ -37,7 +37,6 @@ contract CertificateNFT {
     ) public onlyOwner {
         require(recipient != address(0), "Invalid recipient address");
         recipients.push(recipient);
-        //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             !certificates[recipient].isIssued ||
                 certificates[recipient].isRevoked,
@@ -55,7 +54,6 @@ contract CertificateNFT {
 
     function verifyCertificate(address recipient) public view returns (bool) {
         require(recipient != address(0), "Invalid recipient address");
-        //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             certificates[recipient].recipient == recipient,
             "No certificate found for this recipient"
@@ -70,7 +68,6 @@ contract CertificateNFT {
             msg.sender == owner,
             "Only the University can revoke certificates"
         );
-        //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             certificates[recipient].isIssued,
             "Certificate not issued or already revoked"
@@ -104,7 +101,6 @@ contract CertificateNFT {
         bytes memory signature
     ) public  {
         require(recipient != address(0), "Invalid recipient address");
-        //bytes32 certificateHash = keccak256(abi.encodePacked(recipient));
         require(
             certificates[recipient].isIssued &&
                 !certificates[recipient].isRevoked,
@@ -123,9 +119,7 @@ contract CertificateNFT {
             recipients.length
         );
         for (uint i = 0; i < recipients.length; i++) {
-            // bytes32 certificateHash = keccak256(
-            //     abi.encodePacked(recipients[i])
-            // );
+        
             issuedCertificates[i] = certificates[recipients[i]];
         }
         return issuedCertificates;

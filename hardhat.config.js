@@ -9,15 +9,12 @@ module.exports = {
   solidity: "0.8.20",
   networks: {
     hardhat: {},
-    myQuickNode: {
-      url: process.env.REACT_APP_API_URL,
+    polygon_amoy: {
+      url: process.env.REACT_APP_INFURA_API_URL,
       accounts: [
         process.env.REACT_APP_PRIVATE_KEY,
       ],
     },
-  },
-  etherscan: {
-    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY,
   },
 
   abigen: {

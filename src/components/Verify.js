@@ -13,7 +13,7 @@ export async function verifyCertificate(studentAddress) {
 
     const certificateDetails = await contract.viewCertificate(studentAddress);
 
-    const signerAddress = ethers.utils.verifyMessage(certificateDetails.dataHash, certificateDetails.signature);    // Recover the address of the signer
+    const signerAddress = ethers.verifyMessage(certificateDetails.dataHash, certificateDetails.signature);    // Recover the address of the signer
     const expectedSignerAddress = process.env.REACT_APP_SIGNER_ADDRESS;
 
     console.log(signerAddress + ' AND ' + expectedSignerAddress);
