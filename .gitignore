@@ -1,0 +1,83 @@
+# Laravel Backend
+/laravel-backend/vendor
+/laravel-backend/node_modules
+/laravel-backend/public/hot
+/laravel-backend/public/storage
+/laravel-backend/storage/*.key
+/laravel-backend/storage/logs/*
+/laravel-backend/.env
+/laravel-backend/.env.backup
+/laravel-backend/.phpunit.result.cache
+/laravel-backend/Homestead.json
+/laravel-backend/Homestead.yaml
+/laravel-backend/npm-debug.log
+/laravel-backend/yarn-error.log
+
+# React Frontend
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
+/frontend/coverage
+/frontend/build
+/frontend/.DS_Store
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# Node.js Application
+/node-app/node_modules
+/node-app/npm-debug.log
+/node-app/yarn-error.log
+/node-app/.env
+/node-app/.env.test
+/node-app/coverage
+/node-app/.nyc_output
+
+# General
+.DS_Store
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# Temporary folders
+tmp/
+temp/
