@@ -1,41 +1,28 @@
-# Laravel Backend
-/laravel-backend/vendor
-/laravel-backend/node_modules
-/laravel-backend/public/hot
-/laravel-backend/public/storage
-/laravel-backend/storage/*.key
-/laravel-backend/storage/logs/*
-/laravel-backend/.env
-/laravel-backend/.env.backup
-/laravel-backend/.phpunit.result.cache
-/laravel-backend/Homestead.json
-/laravel-backend/Homestead.yaml
-/laravel-backend/npm-debug.log
-/laravel-backend/yarn-error.log
+# NestJS API
+/api/node_modules
+/api/dist
+/api/coverage
+/api/.env
+/api/.env.*
+!/api/.env.example
 
-# React Frontend
-/frontend/node_modules
-/frontend/.pnp
-/frontend/.pnp.js
-/frontend/coverage
-/frontend/build
-/frontend/.DS_Store
-/frontend/.env.local
-/frontend/.env.development.local
-/frontend/.env.test.local
-/frontend/.env.production.local
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
+# Next.js Web
+/web/node_modules
+/web/.next
+/web/out
+/web/coverage
+/web/.env*.local
+/web/.env
+!/web/.env.example
 
-# Node.js Application
-/node-app/node_modules
-/node-app/npm-debug.log
-/node-app/yarn-error.log
-/node-app/.env
-/node-app/.env.test
-/node-app/coverage
-/node-app/.nyc_output
+# Fabric network material — bin/config are fetched by install-fabric.sh,
+# never committed; test-network/ ships its own nested .gitignore covering
+# generated crypto material (organizations/, channel-artifacts/, etc.)
+/infra/fabric/bin/
+/infra/fabric/config/
+/infra/fabric/**/*.tar.gz
+/infra/fabric/chaincode/certcc/vendor
+/infra/fabric/chaincode/certcc/certcc.tar.gz
 
 # General
 .DS_Store
